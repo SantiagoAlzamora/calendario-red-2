@@ -1,25 +1,25 @@
-import moment from "moment/moment";
+import moment from "moment"
+const dateFormat = "DD-MM-YYYY"
 
 export async function getFeriadosOfTheYearByMonths() {
-  const dateFormat = "YYYY-MM-DD"
+
 
   const actualDate = moment().format(dateFormat)
-  const [actualYear, ,] = actualDate.split("-")
+  const [,,actualYear] = actualDate.split("-")
 
-  const res = await fetch(`http://nolaborables.com.ar/api/v2/feriados/${actualYear}`)
+
+  const res = await fetch(`https://nolaborables.com.ar/api/v2/feriados/${actualYear}`)
   const data = await res.json()
   return data
 
 }
 
-export async function obetenerCantidadFeriados(clasesRestantes) {
+export async function obetenerCantidadFeriados(clasesRestantes, feriados) {
   let cantidadDiasTotal = (clasesRestantes / 4) * 7
 
   const fechaActual = new Date()
   const fecha = new Date(fechaActual)
   fecha.setDate(fecha.getDate() + cantidadDiasTotal)
-
-  const feriados = await getFeriadosOfTheYearByMonths()
 
   const feriadosFiltrados = feriados.filter((feriado) => {
     const fechaFeriado = new Date(
@@ -33,12 +33,12 @@ export async function obetenerCantidadFeriados(clasesRestantes) {
     );
   });
   const cantidadFeriados = feriadosFiltrados.length
-  console.log(cantidadFeriados);
   fecha.setDate(fecha.getDate() + cantidadFeriados)
   if (fecha.getDay() >= 4) {
     fecha.setDate(fecha.getDate() + (7 - (fecha.getDay() - 4)))
   }
-  return fecha.toLocaleDateString()
+  const finalDate = moment(fecha.toLocaleDateString()).format(dateFormat)
+  return finalDate
 }
 
 
