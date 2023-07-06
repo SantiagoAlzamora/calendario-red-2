@@ -7,6 +7,10 @@ export const CURSO = {
   TOTAL_CLASES: 160,
   CONTENIDO: [
     {
+      guia: "Onboarding",
+      clases: 1
+    },
+    {
       guia: "PseInt",
       clases: 26
     },
@@ -41,6 +45,10 @@ export const CURSO = {
     {
       guia: "MySQL",
       clases: 9
+    },
+    {
+      guia: "Integrador Java MySQL",
+      clases: 1
     },
     {
       guia: "Java JDBC",
