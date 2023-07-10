@@ -5,7 +5,7 @@ export async function getFeriadosOfTheYearByMonths() {
 
 
   const actualDate = moment().format(dateFormat)
-  const [,,actualYear] = actualDate.split("-")
+  const [, , actualYear] = actualDate.split("-")
 
 
   const res = await fetch(`https://nolaborables.com.ar/api/v2/feriados/${actualYear}`)
@@ -13,37 +13,50 @@ export async function getFeriadosOfTheYearByMonths() {
   return data
 
 }
+export async function obtenerFechaExamenFinal(clasesRestantes, feriados) {
+  const fechaActual = new Date();
+  let fecha = new Date(fechaActual);
+  let diasRestantes = clasesRestantes
+  let diasFeriados = 0;
 
-export async function obetenerCantidadFeriados(clasesRestantes, feriados) {
-  let cantidadDiasTotal = (clasesRestantes / 4) * 7
+  while (diasRestantes > 0) {
+    fecha.setDate(fecha.getDate() + 1);
 
-  const fechaActual = new Date()
-  const fecha = new Date(fechaActual)
-  fecha.setDate(fecha.getDate() + cantidadDiasTotal)
-
-  const feriadosFiltrados = feriados.filter((feriado) => {
-    const fechaFeriado = new Date(
-      fechaActual.getFullYear(),
-      feriado.mes - 1, // Restamos 1 porque los meses en JavaScript van de 0 a 11
-      feriado.dia
-    );
-    return (
-      fechaFeriado < fecha && fechaFeriado > fechaActual && // Feriado posterior a la fecha actual
-      esDiaHabil(fechaFeriado)  // Aún quedan clases restantes
-    );
-  });
-  const cantidadFeriados = feriadosFiltrados.length
-  fecha.setDate(fecha.getDate() + cantidadFeriados)
-  if (fecha.getDay() >= 4) {
-    fecha.setDate(fecha.getDate() + (7 - (fecha.getDay() - 4)))
+    if (esDiaHabil(fecha) && !esFeriado(fecha, feriados)) {
+      diasRestantes--;
+    } else if (esDiaHabil(fecha) && esFeriado(fecha, feriados)) {
+      diasFeriados++;
+    }
   }
-  const finalDate = moment(fecha.toLocaleDateString()).format(dateFormat)
-  return finalDate
+
+  fecha.setDate(fecha.getDate() + diasFeriados);
+  console.log(fecha.getDay());
+
+  if (fecha.getDay() !== 4) {
+    do {
+      fecha.setDate(fecha.getDate() + 1)
+    } while (fecha.getDay() !== 4)
+  } else {
+    fecha.setDate(fecha.getDate() + 7)
+  }
+
+  console.log(fecha);
+
+  const finalDate = moment(fecha).format(dateFormat);
+  return finalDate;
 }
-
-
 
 function esDiaHabil(fecha) {
   const dia = fecha.getDay();
   return dia >= 1 && dia <= 4; // Lunes a jueves (1 a 4)
+}
+function esFeriado(fecha, feriados) {
+  const feriadoEnFecha = feriados.find((feriado) => {
+    return (
+      feriado.dia === fecha.getDate() &&
+      feriado.mes - 1 === fecha.getMonth() // Restamos 1 porque los meses en JavaScript van de 0 a 11
+    );
+  });
+
+  return feriadoEnFecha !== undefined;
 }

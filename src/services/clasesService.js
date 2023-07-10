@@ -1,8 +1,8 @@
 import { CURSO } from "../constants"
-import { obetenerCantidadFeriados } from "./feriadosService"
+import { obtenerFechaExamenFinal } from "./feriadosService"
 export async function getClasesRestantes(clase, feriados) {
     clase = Number(clase)
-    if(clase > CURSO.TOTAL_CLASES){
+    if (clase > CURSO.TOTAL_CLASES) {
         return
     }
     const clasesRestantes = CURSO.TOTAL_CLASES - clase
@@ -17,7 +17,7 @@ export async function getClasesRestantes(clase, feriados) {
     }
     let clasesRestantesGuiaActual = sumaClases - clase
 
-    const fechaARendir = await obetenerCantidadFeriados(clasesRestantes, feriados)
+    const fechaARendir = await obtenerFechaExamenFinal(clasesRestantes, feriados)
 
     return {
         guiaActual,
