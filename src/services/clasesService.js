@@ -2,7 +2,7 @@ import { CURSO } from "../constants"
 import { obtenerFechaExamenFinal } from "./feriadosService"
 export async function getClasesRestantes(clase, feriados) {
     clase = Number(clase)
-    if (clase > CURSO.TOTAL_CLASES) {
+    if (clase > CURSO.TOTAL_CLASES || clase < 0) {
         return
     }
     const clasesRestantes = CURSO.TOTAL_CLASES - clase
